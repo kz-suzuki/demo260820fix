@@ -1,0 +1,2 @@
+rootProject.name='demoWebRTC202009'
+include ':app'
