@@ -5,24 +5,21 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.DefaultDatabaseErrorHandler;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.VideoView;
 
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.Camera1Enumerator;
-import org.webrtc.Camera2Enumerator;
-import org.webrtc.CameraEnumerationAndroid;
 import org.webrtc.CameraEnumerator;
-import org.webrtc.CameraVideoCapturer;
 import org.webrtc.EglBase;
+import org.webrtc.PeerConnection;
+import org.webrtc.VideoEncoderFactory;
 import org.webrtc.MediaConstraints;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SurfaceViewRenderer;
@@ -30,8 +27,6 @@ import org.webrtc.VideoCapturer;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
-
-import java.util.List;
 
 public class DisplayCamera extends AppCompatActivity {
 
@@ -44,7 +39,9 @@ public class DisplayCamera extends AppCompatActivity {
     PeerConnectionFactory peerConnectionFactory;
     PeerConnectionFactory.Options options;
 
+
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_camera);
@@ -62,6 +59,10 @@ public class DisplayCamera extends AppCompatActivity {
         options = new PeerConnectionFactory.Options();
         peerConnectionFactory = new PeerConnectionFactory(options);
 
+
+//        VideoEncoderFactory defaultVideoEncoderFactory = new DefaultVideoEncoderFactory(
+//                rootEglBase.getEglBaseContext(),  /* enableIntelVp8Encoder */true,  /* enableH264HighProfile */true);
+//        DefaultVideoDecoderFactory defaultVideoDecoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
 
         //Create a VideoCapturer instance which uses the camera of the device
         videoCapturerAndroid = createVideoCapturer();
@@ -81,20 +82,27 @@ public class DisplayCamera extends AppCompatActivity {
         videoCapturerAndroid.startCapture(1000, 1000, 30);
 
         //create surface renderer, init it and add the renderer to the track
-        SurfaceViewRenderer videoView = (SurfaceViewRenderer)findViewById(R.id.videoView);
-        videoView.setVisibility(View.VISIBLE);
+        SurfaceViewRenderer myVideoView = (SurfaceViewRenderer)findViewById(R.id.myVideoView);
+        SurfaceViewRenderer peerVideoView = (SurfaceViewRenderer)findViewById(R.id.peerVideoView);
+
+        myVideoView.setVisibility(View.VISIBLE);
+        peerVideoView.setVisibility(View.VISIBLE);
+
 
         //create an EglBase instance
         EglBase rootEglBase = EglBase.create();
 
         //init the SurfaceViewRenderer using the eglContext
-        videoView.init(rootEglBase.getEglBaseContext(), null);
+        myVideoView.init(rootEglBase.getEglBaseContext(), null);
+        peerVideoView.init(rootEglBase.getEglBaseContext(), null);
 
         //a small method to provide a mirror effect to the SurfaceViewRenderer
-        videoView.setMirror(true);
+        myVideoView.setMirror(true);
+        peerVideoView.setMirror(true);
 
         //Add the renderer to the video track
-        localVideoTrack.addRenderer(new VideoRenderer(videoView));
+       localVideoTrack.addRenderer(new VideoRenderer(myVideoView));
+       localVideoTrack.addRenderer(new VideoRenderer(peerVideoView));
 
         btnEnd =(Button)findViewById(R.id.btnEnd);
         intent = null;
@@ -108,7 +116,7 @@ public class DisplayCamera extends AppCompatActivity {
     private VideoCapturer createVideoCapturer() {
         VideoCapturer videoCapturer = createCameraCapturer(new Camera1Enumerator(false));
         if (videoCapturer == null) {
-            Log.d("opencamera","Failed to open camera");
+            //Log.d("opencamera","Failed to open camera");
             return null;
         }
         return videoCapturer;

@@ -10,8 +10,8 @@ import java.util.UUID;
 
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
-import org.webrtc.PeerConnectionFactory;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnCall;
     TextView textViewID;
     Intent intent;
+    EditText editText;
+    String peerId;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +38,13 @@ public class MainActivity extends AppCompatActivity {
         //Log.d("random-subUID", subUID);
 
         btnCall = (Button) findViewById(R.id.btnCall);
+        editText = (EditText) findViewById(R.id.editText);
+        //Log.d("edittext", peerId);
+
 
         btnCall.setOnClickListener(v -> {
             intent = new Intent(this, OpenCamera.class);
+            intent.putExtra("peerId", subUID);
             startActivity(intent);
         });
 
@@ -50,11 +56,11 @@ public class MainActivity extends AppCompatActivity {
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)){
-            Log.d("lien", "lienbt1");
+            //Log.d("checkcam", "camera exist");
             // this device has a camera
             return true;
         } else {
-            Log.d("lien", "lienbt0");
+            //Log.d("checkcam", "camera not exist");
             // no camera on this device
             return false;
         }

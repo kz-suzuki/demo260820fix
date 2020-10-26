@@ -7,12 +7,19 @@
     tools:context=".DisplayCamera">
 
     <org.webrtc.SurfaceViewRenderer
-        android:id="@+id/videoView"
+        android:id="@+id/myVideoView"
         android:layout_width="406dp"
-        android:layout_height="626dp"
+        android:layout_height="200dp"
         android:layout_marginBottom="88dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <org.webrtc.SurfaceViewRenderer
+        android:id="@+id/peerVideoView"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/btnEnd"
