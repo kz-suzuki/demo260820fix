@@ -1,7 +1,11 @@
 package com.lotus9492.demowebrtc202009;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,15 +24,16 @@ public class MainActivity extends AppCompatActivity {
     TextView textViewID;
     Intent intent;
     EditText editText;
-    String peerId;
+    String uid;
+    String subUID;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //get random 10 digits number uniqueID,
-        String uid = UUID.randomUUID().toString().replace("-", "").replaceAll("[a-z]", "");
-        String subUID = uid.substring(0, 10);
+        uid = UUID.randomUUID().toString().replace("-", "").replaceAll("[a-z]", "");
+        subUID = uid.substring(0, 10);
 
         //display this uniqueID to screen
         textViewID = (TextView) findViewById(R.id.txtViewID);
@@ -41,15 +46,13 @@ public class MainActivity extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.editText);
         //Log.d("edittext", peerId);
 
-
-        btnCall.setOnClickListener(v -> {
-            intent = new Intent(this, OpenCamera.class);
-            intent.putExtra("peerId", subUID);
-            startActivity(intent);
-        });
-
         checkCameraHardware(this);
 
+        btnCall.setOnClickListener(v -> {
+            intent = new Intent(this, DisplayCamera.class);
+            //intent.putExtra("peerId", subUID);
+            startActivity(intent);
+        });
     }
 
     //Detecting camera hardware
@@ -65,6 +68,5 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-
 
 }

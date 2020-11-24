@@ -54,7 +54,7 @@ public class SignallingClient {
         }
         if (instance.roomName == null) {
             //set the room name here
-            instance.roomName = "vivek17";
+            instance.roomName = "lienbt";
         }
         return instance;
     }
@@ -67,7 +67,7 @@ public class SignallingClient {
             IO.setDefaultHostnameVerifier((hostname, session) -> true);
             IO.setDefaultSSLContext(sslcontext);
             //set the socket.io url here
-            socket = IO.socket("http://192.168.178.207:1794");
+            socket = IO.socket("http://192.168.13.5:3000");
             socket.connect();
             Log.d("SignallingClient", "init() called");
 
@@ -159,7 +159,7 @@ public class SignallingClient {
             obj.put("sdp", message.description);
             Log.d("emitMessage", obj.toString());
             socket.emit("message", obj);
-            Log.d("vivek1794", obj.toString());
+            Log.d("lienbt", obj.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -191,7 +191,7 @@ public class SignallingClient {
 
         void onAnswerReceived(JSONObject data);
 
-        void onIceCandidateReceived(JSONObject data);
+        void  onIceCandidateReceived(JSONObject data);
 
         void onTryToStart();
 
