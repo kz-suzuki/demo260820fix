@@ -157,11 +157,11 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
                 }
                 for (IceServer iceServer : iceServers) {
                     if (iceServer.credential == null) {
-                        PeerConnection.IceServer peerIceServer = PeerConnection.IceServer.builder(iceServer.url).createIceServer();
+                        PeerConnection.IceServer peerIceServer = PeerConnection.IceServer.builder(iceServer.urls).createIceServer();
                         peerIceServers.add(peerIceServer);
 
                     } else {
-                        PeerConnection.IceServer peerIceServer = PeerConnection.IceServer.builder(iceServer.url)
+                        PeerConnection.IceServer peerIceServer = PeerConnection.IceServer.builder(iceServer.urls)
                                 .setUsername(iceServer.username)
                                 .setPassword(iceServer.credential)
                                 .createIceServer();

@@ -1,10 +1,10 @@
 "use strict";
 
+
 var os = require("os");
 var nodeStatic = require("node-static");
 var fileServer = new nodeStatic.Server();
 var http = require('http');
-var socket = require('socket.io');
 
 var app = http.createServer(function(req, res){
     req.addListener('end', function(){
@@ -20,8 +20,11 @@ var app = http.createServer(function(req, res){
     }).resume();
 }).listen(3000);
 
-var io = socket.listen(app);
+var io = require('socket.io')(app);
+
 io.sockets.on('connection', function(socket) {
+
+    console.log("connected");
 
     // convenience function to log server messages on the client
     function log() {
