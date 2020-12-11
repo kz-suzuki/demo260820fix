@@ -144,13 +144,16 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
         try {
             data = ("lotus9492:efb4281c-eb67-11ea-91cd-0242ac150003").getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
+            Log.d("getIceServersErr", "getIceServers error");
             e.printStackTrace();
         }
         String authToken = "Basic " + Base64.encodeToString(data, Base64.NO_WRAP);
+        Log.d("authToken", "authToken " + authToken);
         Utils.getInstance().getRetrofitInstance().getIceCandidates(authToken).enqueue(new Callback<TurnServerPojo>() {
 
             @Override
             public void onResponse(@NonNull Call<TurnServerPojo> call, @NonNull Response<TurnServerPojo> response) {
+                Log.d("onResponse","onResponse called");
                 TurnServerPojo body = response.body();
                 if (body != null) {
                     iceServers = body.iceServerList.iceServers;
@@ -173,6 +176,7 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
 
             @Override
             public void onFailure(@NonNull Call<TurnServerPojo> call, @NonNull Throwable t) {
+                Log.d("onFailureErr", "onFailure error");
                 t.printStackTrace();
             }
         });
@@ -245,6 +249,7 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
         peerVideoView.setMirror(true);
 
         gotUserMedia = true;
+        Log.d("isInitiator","isInitiator" + SignallingClient.getInstance().isInitiator);
         if (SignallingClient.getInstance().isInitiator) {
             onTryToStart();
         }
@@ -263,7 +268,10 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
 
     @Override
     public void onTryToStart() {
+        Log.d("onTryToStartMethod","onTryToStartMethod called");
         runOnUiThread(() -> {
+            Log.d("isStarted","isStarted" + SignallingClient.getInstance().isStarted);
+            Log.d("isChannelReady","isChannelReady" + SignallingClient.getInstance().isChannelReady);
             if (!SignallingClient.getInstance().isStarted && localVideoTrack != null && SignallingClient.getInstance().isChannelReady) {
                 createPeerConnection();
                 SignallingClient.getInstance().isStarted = true;
@@ -278,6 +286,8 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
      * Creating the local peerconnection instance
      */
     private void createPeerConnection() {
+        Log.d("createPeerConnectionMethod","createPeerConnectionMethod called");
+
         rtcConfig = new PeerConnection.RTCConfiguration(peerIceServers);
         // TCP candidates are only useful when connecting to a server that supports
         // ICE-TCP.

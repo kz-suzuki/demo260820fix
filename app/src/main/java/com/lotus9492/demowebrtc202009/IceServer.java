@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class IceServer {
 
+//    @SerializedName("username")
+//    @Expose
+//    public String username;
     @SerializedName("urls")
     @Expose
     public String urls;
@@ -22,5 +25,9 @@ public class IceServer {
                 ", username='" + username + '\'' +
                 ", credential='" + credential + '\'' +
                 '}';
+//                "username='" + username + '\'' +
+//                ", urls='" + urls + '\'' +
+//                ", credential='" + credential + '\'' +
+//                '}';
     }
 }

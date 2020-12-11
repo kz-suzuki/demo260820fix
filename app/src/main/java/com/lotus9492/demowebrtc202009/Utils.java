@@ -1,5 +1,7 @@
 package com.lotus9492.demowebrtc202009;
 
+import android.util.Log;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -18,6 +20,7 @@ public class Utils {
     private Retrofit retrofitInstance;
 
     TurnServer getRetrofitInstance() {
+        Log.d("getRetrofitInstance", "getRetrofitInstanceMethod called");
         if (retrofitInstance == null) {
             retrofitInstance = new Retrofit.Builder()
                     .baseUrl(API_ENDPOINT)

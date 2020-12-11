@@ -49,13 +49,16 @@ public class SignallingClient {
     }};
 
     public static SignallingClient getInstance() {
+        Log.d("getInstanceMethod", "getInstanceMethod called");
         if (instance == null) {
             instance = new SignallingClient();
         }
         if (instance.roomName == null) {
+            Log.d("setRoomName", "setRoomName");
             //set the room name here
             instance.roomName = "lienbt";
         }
+        Log.d("instance", "instance " + instance);
         return instance;
     }
 
@@ -67,8 +70,8 @@ public class SignallingClient {
             IO.setDefaultHostnameVerifier((hostname, session) -> true);
             IO.setDefaultSSLContext(sslcontext);
             //set the socket.io url here
-            socket = IO.socket("http://192.168.248.130:3000");
-            //socket = IO.socket("http://192.168.13.5:3000");
+            socket = IO.socket("http://192.168.243.64:3000");
+//            socket = IO.socket("http://192.168.13.5:3000");
             socket.connect();
             Log.d("SignallingClient", "init() called");
 
@@ -192,7 +195,7 @@ public class SignallingClient {
 
         void onAnswerReceived(JSONObject data);
 
-        void  onIceCandidateReceived(JSONObject data);
+        void onIceCandidateReceived(JSONObject data);
 
         void onTryToStart();
 
