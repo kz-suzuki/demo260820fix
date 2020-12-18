@@ -3,29 +3,26 @@ package com.lotus9492.demowebrtc202009;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class TurnServerPojo {
 
-    @SerializedName("s")
-    @Expose
-    public Integer s;
-    @SerializedName("p")
-    @Expose
-    public String p;
-    @SerializedName("e")
-    @Expose
-    public Object e;
     @SerializedName("v")
     @Expose
-    public IceServerList iceServerList;
+    public V v;
+    @SerializedName("s")
+    @Expose
+    public String s;
 
-    class IceServerList {
+    public class V {
 
         @SerializedName("iceServers")
         @Expose
-        public List<IceServer> iceServers = null;
+        public IceServer iceServer;
 
     }
 
 }
+
+
+
+
+

@@ -1,14 +1,10 @@
 package com.lotus9492.demowebrtc202009;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -18,6 +14,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,9 +33,9 @@ import org.webrtc.DefaultVideoDecoderFactory;
 import org.webrtc.DefaultVideoEncoderFactory;
 import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
+import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
-import org.webrtc.MediaConstraints;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceTextureHelper;
@@ -43,10 +47,13 @@ import org.webrtc.VideoTrack;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class DisplayCamera extends AppCompatActivity implements SignallingClient.SignalingInterface {
 
@@ -55,7 +62,8 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
     VideoCapturer videoCapturerAndroid;
     PeerConnectionFactory peerConnectionFactory;
     PeerConnectionFactory.Options options;
-    List<IceServer> iceServers;
+    //List<IceServer> iceServers;
+    IceServer iceServer;
     List<PeerConnection.IceServer> peerIceServers  = new ArrayList<>();
     MediaConstraints sdpConstraints;
     MediaConstraints audioConstraints;
@@ -149,37 +157,45 @@ public class DisplayCamera extends AppCompatActivity implements SignallingClient
         }
         String authToken = "Basic " + Base64.encodeToString(data, Base64.NO_WRAP);
         Log.d("authToken", "authToken " + authToken);
-        Utils.getInstance().getRetrofitInstance().getIceCandidates(authToken).enqueue(new Callback<TurnServerPojo>() {
 
-            @Override
-            public void onResponse(@NonNull Call<TurnServerPojo> call, @NonNull Response<TurnServerPojo> response) {
-                Log.d("onResponse","onResponse called");
-                TurnServerPojo body = response.body();
-                if (body != null) {
-                    iceServers = body.iceServerList.iceServers;
-                }
-                for (IceServer iceServer : iceServers) {
-                    if (iceServer.credential == null) {
-                        PeerConnection.IceServer peerIceServer = PeerConnection.IceServer.builder(iceServer.urls).createIceServer();
-                        peerIceServers.add(peerIceServer);
 
-                    } else {
-                        PeerConnection.IceServer peerIceServer = PeerConnection.IceServer.builder(iceServer.urls)
-                                .setUsername(iceServer.username)
-                                .setPassword(iceServer.credential)
-                                .createIceServer();
-                        peerIceServers.add(peerIceServer);
+        Map<String, Object> jsonParams = new ArrayMap<>();
+        //put something inside the map, could be null
+        jsonParams.put("format", "urls");
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(new JSONObject(jsonParams)).toString());
+
+                Utils.getInstance().getRetrofitInstance().getIceCandidates(authToken,body).enqueue(new Callback<TurnServerPojo>() {
+
+                    @Override
+                    public void onResponse(@NonNull Call<TurnServerPojo> call, @NonNull Response<TurnServerPojo> response) {
+                        Log.d("onResponse", "onResponse called");
+                        TurnServerPojo body = response.body();
+
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        Log.d("getbody", gson.toJson(response.body()));
+
+                        if (body != null) {
+                            iceServer = body.v.iceServer;
+                            Log.d("iceServers", String.valueOf(iceServer));
+
+                        }
+                        for (String url: iceServer.urls) {
+                            if (url == null) {
+                                continue;
+                            }
+                            PeerConnection.IceServer peerIceServer = PeerConnection.IceServer.builder(url).createIceServer();
+                            Log.d("peerIceServer", String.valueOf(peerIceServer));
+                            peerIceServers.add(peerIceServer);
+                        }
+                        Log.d("onApiResponse", "IceServers\n" + iceServer.toString());
                     }
-                }
-                Log.d("onApiResponse", "IceServers\n" + iceServers.toString());
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<TurnServerPojo> call, @NonNull Throwable t) {
-                Log.d("onFailureErr", "onFailure error");
-                t.printStackTrace();
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<TurnServerPojo> call, @NonNull Throwable t) {
+                        Log.d("onFailureErr", "onFailure error");
+                        t.printStackTrace();
+                    }
+                });
     }
 
     /**

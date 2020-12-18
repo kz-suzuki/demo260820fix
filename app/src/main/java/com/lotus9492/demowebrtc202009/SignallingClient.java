@@ -70,7 +70,8 @@ public class SignallingClient {
             IO.setDefaultHostnameVerifier((hostname, session) -> true);
             IO.setDefaultSSLContext(sslcontext);
             //set the socket.io url here
-            socket = IO.socket("http://192.168.243.64:3000");
+            socket = IO.socket("http://127.0.0.1:3000");
+            //socket = IO.socket("http://192.168.243.64:3000");
 //            socket = IO.socket("http://192.168.13.5:3000");
             socket.connect();
             Log.d("SignallingClient", "init() called");
